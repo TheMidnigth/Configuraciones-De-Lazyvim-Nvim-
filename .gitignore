@@ -6,3 +6,25 @@ debug
 foo.*
 *.log
 data
+
+
+# plugins y paquetes
+lazy-lock.json
+plugin/
+pack/
+
+# cache
+.cache/
+tmp/
+logs/
+
+# LSP / compilados
+*.class
+*.jar
+
+# node (por si usas algo web)
+node_modules/
+
+# sistema
+.DS_Store
+.venv/
