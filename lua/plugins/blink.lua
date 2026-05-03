@@ -28,7 +28,7 @@ return {
                     Property = "󰜢",
                     Unit = "󰑭",
                     Value = "󰎠",
-                    Enum = "",
+                    Enum = "",
                     Keyword = "󰌋",
                     Snippet = "",
                     Color = "󰏘",
