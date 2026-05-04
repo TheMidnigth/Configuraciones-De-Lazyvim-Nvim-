@@ -40,7 +40,6 @@ vim.opt.signcolumn = "yes"
 vim.opt.wrap = false
 vim.opt.colorcolumn = ""
 
-
 -- ===============================
 -- SCROLL / FLUIDEZ
 -- ===============================
@@ -115,4 +114,5 @@ vim.api.nvim_create_autocmd("ColorScheme", {
         vim.api.nvim_set_hl(0, "Visual", { bg = "#2c3150", bold = false })
     end,
 })
+
 
