@@ -2048,7 +2048,7 @@ local java_items = {
         hl = "ExRed",
         condition = has_main_method,
         cmd = function()
-            require("jdtls").start_debugging()
+            require("dap").continue()
         end,
     },
     {
@@ -2058,13 +2058,34 @@ local java_items = {
             {
                 name = "Run with Arguments",
                 cmd = function()
-                    require("jdtls").compile("incremental")
+                    local cwd = vim.fn.getcwd()
+                    local args = vim.fn.input("Program arguments: ", "")
+                    require("snacks").terminal({
+                        "bash",
+                        "-c",
+                        "cd '"
+                            .. cwd
+                            .. "' && mkdir -p out && javac src/*.java -d out"
+                            .. " && java -cp out Main "
+                            .. args
+                            .. "; echo; echo '--- Process finished ---'; read",
+                    }, { win = { position = "bottom", height = 0.3 } })
                 end,
             },
             {
                 name = "Debug with Arguments",
                 cmd = function()
-                    require("jdtls").test_class()
+                    local args_str = vim.fn.input("Debug arguments: ", "")
+                    local args = vim.split(args_str, " ", { trimempty = true })
+                    local dap = require("dap")
+                    local cfgs = dap.configurations.java
+                    if cfgs and #cfgs > 0 then
+                        local cfg = vim.deepcopy(cfgs[1])
+                        cfg.args = args
+                        dap.run(cfg)
+                    else
+                        require("jdtls").start_debugging()
+                    end
                 end,
             },
             {
@@ -2082,7 +2103,8 @@ local java_items = {
             {
                 name = "Stop",
                 cmd = function()
-                    vim.cmd("bdelete!")
+                    require("dap").terminate()
+                    pcall(require("dapui").close)
                 end,
             },
         },
