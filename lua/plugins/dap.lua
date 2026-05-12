@@ -156,15 +156,15 @@ return {
                 enabled = true,
                 element = "repl",
                 icons = {
-                    pause = "",
-                    play = "",
-                    step_into = "󰁏",
-                    step_over = "󰙡",
-                    step_out = "󰙣",
-                    step_back = "󰯯",
-                    run_last = "󰁙󰁙",
-                    terminate = "󰙦",
-                    disconnect = "󰁢",
+                    pause = "⏸",
+                    play = "▶",
+                    step_into = "⏎",
+                    step_over = "⏭",
+                    step_out = "⏮",
+                    step_back = "b",
+                    run_last = "▶▶",
+                    terminate = "⏹",
+                    disconnect = "⏏",
                 },
             },
             layouts = {
@@ -221,24 +221,26 @@ return {
         "theHamsta/nvim-dap-virtual-text",
         lazy = false,
         config = function()
+            -- Color verde estilo IntelliJ
+            vim.api.nvim_set_hl(0, "NvimDapVirtualText", {
+                fg = "#6A9955", -- verde IntelliJ
+                italic = true,
+            })
+
             require("nvim-dap-virtual-text").setup({
                 enabled = true,
                 enabled_commands = true,
                 highlight_changed_variables = true,
-                highlight_new_as_changed = true, -- resalta vars que cambiaron (como IntelliJ)
+                highlight_new_as_changed = true,
                 show_stop_reason = true,
                 commented = false,
                 only_first_definition = true,
-                all_references = false,
+                all_references = true, -- muestra en todas las líneas donde aparece la var
                 clear_on_continue = false,
                 display_callback = function(variable, buf, stackframe, node, options)
-                    if options.virt_text_pos == "inline" then
-                        return " = " .. variable.value
-                    else
-                        return variable.name .. " = " .. variable.value
-                    end
+                    return "  " .. variable.name .. ": " .. variable.value -- estilo IntelliJ
                 end,
-                virt_text_pos = "inline", -- inline: al lado del código, como IntelliJ
+                virt_text_pos = "eol", -- al final de la línea, como IntelliJ
                 all_frames = false,
                 virt_lines = false,
                 virt_text_win_col = nil,
@@ -362,35 +364,38 @@ return {
         version = "^5",
         ft = "rust",
         dependencies = { "mfussenegger/nvim-dap" },
-        -- stylua: ignore
-        keys = {
-            { "<leader>dr", function() vim.cmd.RustLsp("debuggables") end, desc = "Rust: Debuggables", ft = "rust" },
-            { "<leader>dR", function() vim.cmd.RustLsp("runnables") end,    desc = "Rust: Runnables",   ft = "rust" },
-        },
-        opts = {
-            server = {
-                on_attach = function(_, bufnr)
-                    vim.keymap.set("n", "<leader>cR", function()
-                        vim.cmd.RustLsp("codeAction")
-                    end, { desc = "Code Action (Rust)", buffer = bufnr })
-                end,
-                default_settings = {
-                    ["rust-analyzer"] = {
-                        cargo = { allFeatures = true, loadOutDirsFromCheck = true, buildScripts = { enable = true } },
-                        procMacro = { enable = true },
-                        checkOnSave = true,
+    -- stylua: ignore
+    keys = {
+        { "<leader>dr", function() vim.cmd.RustLsp("debuggables") end, desc = "Rust: Debuggables", ft = "rust" },
+        { "<leader>dR", function() vim.cmd.RustLsp("runnables") end,    desc = "Rust: Runnables",   ft = "rust" },
+    },
+        config = function()
+            vim.g.rustaceanvim = {
+                server = {
+                    on_attach = function(_, bufnr)
+                        vim.keymap.set("n", "<leader>cR", function()
+                            vim.cmd.RustLsp("codeAction")
+                        end, { desc = "Code Action (Rust)", buffer = bufnr })
+                    end,
+                    default_settings = {
+                        ["rust-analyzer"] = {
+                            cargo = {
+                                allFeatures = true,
+                                loadOutDirsFromCheck = true,
+                                buildScripts = { enable = true },
+                            },
+                            procMacro = { enable = true },
+                            checkOnSave = true,
+                        },
                     },
                 },
-            },
-            dap = {
-                adapter = require("rustaceanvim.config").get_codelldb_adapter(
-                    vim.fn.stdpath("data") .. "/mason/bin/codelldb",
-                    vim.fn.stdpath("data") .. "/mason/packages/codelldb/extension/lldb/lib/liblldb.so"
-                ),
-            },
-        },
-        config = function(_, opts)
-            vim.g.rustaceanvim = opts
+                dap = {
+                    adapter = require("rustaceanvim.config").get_codelldb_adapter( -- ✅ ahora dentro de config
+                        vim.fn.stdpath("data") .. "/mason/bin/codelldb",
+                        vim.fn.stdpath("data") .. "/mason/packages/codelldb/extension/lldb/lib/liblldb.so"
+                    ),
+                },
+            }
         end,
     },
 
