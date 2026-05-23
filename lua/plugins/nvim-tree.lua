@@ -28,6 +28,22 @@ return {
                     require("menu").open(options)
                 end, { buffer = bufnr, desc = "Open NvimTree Menu" })
             end,
+            -- ── Filtros: ocultar basura de Windows/WSL y carpetas de build ──
+            filters = {
+                dotfiles = false,
+                git_ignored = false,
+                custom = {
+                    "Identifier$", -- captura todo lo que termine en Identifier
+                    "^target$",
+                    "^build$",
+                    "^%.settings$",
+                    "^%.classpath$",
+                    "^%.factorypath$",
+                    "^%.project$",
+                },
+                exclude = {},
+            },
+
             view = {
                 width = 35,
                 side = "left",

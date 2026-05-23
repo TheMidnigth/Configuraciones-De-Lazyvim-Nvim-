@@ -166,7 +166,7 @@ function M.get_menu(api, node_fn)
             hl = "ExBlue",
             items = {
                 {
-                    name = "󰌗  Class...",
+                    name = "󰆦  Class...",
                     cmd = function()
                         local node = node_fn()
                         local dir = get_dir(node)
@@ -190,7 +190,7 @@ function M.get_menu(api, node_fn)
                     end,
                 },
                 {
-                    name = "󰜰  Interface...",
+                    name = "󰆩  Interface...",
                     cmd = function()
                         local node = node_fn()
                         local dir = get_dir(node)
@@ -214,7 +214,7 @@ function M.get_menu(api, node_fn)
                     end,
                 },
                 {
-                    name = "󰉺  Record...",
+                    name = "󰻂  Record...",
                     cmd = function()
                         local node = node_fn()
                         local dir = get_dir(node)
@@ -238,7 +238,7 @@ function M.get_menu(api, node_fn)
                     end,
                 },
                 {
-                    name = "󰕘  Enum...",
+                    name = "󰾍  Enum...",
                     cmd = function()
                         local node = node_fn()
                         local dir = get_dir(node)
@@ -262,7 +262,7 @@ function M.get_menu(api, node_fn)
                     end,
                 },
                 {
-                    name = "󰀿  Annotation...",
+                    name = "  Annotation...",
                     cmd = function()
                         local node = node_fn()
                         local dir = get_dir(node)
