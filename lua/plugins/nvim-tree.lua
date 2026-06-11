@@ -104,6 +104,99 @@ return {
         config = function(_, opts)
             vim.g.loaded_netrw = 1
             vim.g.loaded_netrwPlugin = 1
+
+            -- ── Highlight groups estilo IntelliJ (persisten entre reinicios) ──
+            local function setup_java_highlights()
+                vim.api.nvim_set_hl(0, "JavaIconClass", { fg = "#4FC3F7" }) -- Azul
+                vim.api.nvim_set_hl(0, "JavaIconInterface", { fg = "#C3E88D" }) -- Verde
+                vim.api.nvim_set_hl(0, "JavaIconRecord", { fg = "#FDD835" }) -- Naranja
+                vim.api.nvim_set_hl(0, "JavaIconEnum", { fg = "#F78C6C" }) -- Amarillo
+                vim.api.nvim_set_hl(0, "JavaIconAnnotation", { fg = "#C792EA" }) -- Morado
+                vim.api.nvim_set_hl(0, "JavaIconException", { fg = "#FFCB6B" }) -- Dorado
+            end
+
+            setup_java_highlights()
+            vim.api.nvim_create_autocmd("ColorScheme", {
+                pattern = "*",
+                callback = setup_java_highlights,
+            })
+
+            -- ── Setup base de mini.icons ───────────────────────────────
+            local ok_mini, mini_icons = pcall(require, "mini.icons")
+            if ok_mini then
+                mini_icons.setup({
+                    extension = {
+                        java = { glyph = "󰆦", hl = "JavaIconClass" },
+                    },
+                })
+
+                -- ── Override del getter para archivos .java ────────────
+                local orig_get = mini_icons.get
+                mini_icons.get = function(category, name, ...)
+                    if category == "file" and type(name) == "string" and name:match("%.java$") then
+                        local abs = nil
+
+                        -- 1. Buscar en buffers abiertos
+                        for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+                            local bufname = vim.api.nvim_buf_get_name(buf)
+                            if bufname:match(vim.pesc(name) .. "$") then
+                                abs = bufname
+                                break
+                            end
+                        end
+
+                        -- 2. Si no está en buffers, buscar en el proyecto
+                        if not abs or abs == "" then
+                            local found = vim.fn.findfile(name, vim.fn.getcwd() .. "/**")
+                            if found and found ~= "" then
+                                abs = vim.fn.fnamemodify(found, ":p")
+                            end
+                        end
+
+                        -- 3. Aplicar icono según tipo (cache en disco)
+                        if abs and abs ~= "" then
+                            local ok_ji, java_icons = pcall(require, "config.java-icons")
+                            if ok_ji then
+                                local icon = java_icons.get_icon(abs)
+                                return icon.glyph, icon.hl, false
+                            end
+                        end
+                    end
+                    return orig_get(category, name, ...)
+                end
+            end
+
+            -- ── Escaneo de archivos Java ───────────────────────────────
+            local function scan_java_files()
+                local ok_ji, java_icons = pcall(require, "config.java-icons")
+                if not ok_ji then
+                    return
+                end
+                local files = vim.fn.glob(vim.fn.getcwd() .. "/**/*.java", false, true)
+                for _, filepath in ipairs(files) do
+                    java_icons.get_icon(filepath)
+                end
+                local ok_api, api = pcall(require, "nvim-tree.api")
+                if ok_api then
+                    pcall(api.tree.reload)
+                end
+            end
+
+            -- Escanear al abrir nvim-tree
+            vim.api.nvim_create_autocmd("BufEnter", {
+                pattern = "NvimTree_*",
+                callback = function()
+                    vim.defer_fn(scan_java_files, 0)
+                end,
+            })
+
+            -- Escanear al cambiar de directorio
+            vim.api.nvim_create_autocmd("DirChanged", {
+                callback = function()
+                    vim.defer_fn(scan_java_files, 100)
+                end,
+            })
+
             require("nvim-tree").setup(opts)
         end,
     },

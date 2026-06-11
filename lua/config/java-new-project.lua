@@ -41,7 +41,7 @@ end
 local state = {
     project_type = "Java",
     name = "untitled",
-    location = "~/Documents/codigos de programacion",
+    location = "~/Documents/CodigosProgramacion/",
     git = false,
     build_system = "IntelliJ",
     sample_code = true,
@@ -50,7 +50,7 @@ local state = {
 }
 
 local PROJECT_TYPES = {
-    { label = "Java", icon = " ", group = "New Project" },
+    { label = "Java", icon = "󰆦 ", group = "New Project" },
     { label = "Kotlin", icon = " ", group = "New Project" },
     { label = "Groovy", icon = " ", group = "New Project" },
     { label = "Empty Project", icon = " ", group = "New Project" },

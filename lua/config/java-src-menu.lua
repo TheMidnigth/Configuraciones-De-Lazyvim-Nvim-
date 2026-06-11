@@ -162,7 +162,7 @@ function M.get_menu(api, node_fn)
     -- Submenú "New" usando "items"
     local new_items = {
         {
-            name = "  New Java Class",
+            name = "󰆦  New Java Class",
             hl = "ExBlue",
             items = {
                 {
