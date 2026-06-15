@@ -8,7 +8,7 @@ return {
                 preset = "default",
                 ["<Tab>"] = { "accept", "fallback" },
                 ["<CR>"] = { "accept", "fallback" },
-                ["<C-k>"] = { "show", "fallback" },
+                ["<C-Space>"] = { "show", "fallback" },
                 ["<C-e>"] = { "hide", "fallback" },
                 ["<Up>"] = { "select_prev", "fallback" },
                 ["<Down>"] = { "select_next", "fallback" },

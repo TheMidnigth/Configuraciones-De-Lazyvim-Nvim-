@@ -2031,14 +2031,15 @@ local java_items = {
         condition = has_main_method,
         cmd = function()
             local cwd = vim.fn.getcwd()
-            require("snacks").terminal({
-                "bash",
-                "-c",
-                "cd '"
-                    .. cwd
-                    .. "' && mkdir -p out && javac src/*.java -d out && java -cp out Main; echo; echo '--- Process finished ---'; read",
-            }, {
-                win = { position = "bottom", height = 0.3 },
+            local java_cmd = "clear; cd '"
+                .. cwd
+                .. "' && mkdir -p out && javac src/*.java -d out && java -cp out Main; "
+                .. 'code=$?; echo; echo "Process finished with exit code $code"; read'
+
+            require("floaterm").open()
+            require("floaterm.api").new_term({
+                name = "Run Main",
+                cmd = java_cmd,
             })
         end,
         rtxt = "Ctrl+Shift+F10",
