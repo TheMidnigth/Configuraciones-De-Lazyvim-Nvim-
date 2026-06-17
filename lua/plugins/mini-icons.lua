@@ -1,6 +1,6 @@
 return {
     {
-        "echasnovski/mini.icons",
+        "nvim-mini/mini.icons",
         opts = {
             extension = {
                 java = { glyph = "󰆦", hl = "MiniIconsBlue" },
