@@ -2031,14 +2031,37 @@ local java_items = {
         condition = has_main_method,
         cmd = function()
             local cwd = vim.fn.getcwd()
+            local current_file = vim.fn.expand("%:t:r")
+            local project_name = vim.fn.fnamemodify(cwd, ":t")
+            local out_dir = "out/production/" .. project_name
+
+            -- Detecta si la clase tiene package
+            local lines = vim.api.nvim_buf_get_lines(0, 0, 10, false)
+            local package_name = nil
+            for _, line in ipairs(lines) do
+                local pkg = line:match("^package%s+([%w%.]+)%s*;")
+                if pkg then
+                    package_name = pkg
+                    break
+                end
+            end
+
+            -- Si tiene package lo incluye, si no lo omite
+            local class_path = package_name and (package_name .. "." .. current_file) or current_file
+
             local java_cmd = "clear; cd '"
                 .. cwd
-                .. "' && mkdir -p out && javac src/*.java -d out && java -cp out Main; "
+                .. "' && javac -d "
+                .. out_dir
+                .. " $(find src -name '*.java') && java -cp "
+                .. out_dir
+                .. " "
+                .. class_path
+                .. "; "
                 .. 'code=$?; echo; echo "Process finished with exit code $code"; read'
-
             require("floaterm").open()
             require("floaterm.api").new_term({
-                name = "Run Main",
+                name = "Run " .. current_file,
                 cmd = java_cmd,
             })
         end,
