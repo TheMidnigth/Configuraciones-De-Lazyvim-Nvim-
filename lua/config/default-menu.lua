@@ -603,6 +603,24 @@ local java_items = {
         cmd = vim.lsp.buf.code_action,
         rtxt = "Ctrl+.",
     },
+    {
+        name = "  Reformat Code",
+        cmd = function()
+            local filepath = vim.fn.expand("%:p")
+            local buf = vim.api.nvim_get_current_buf()
+            vim.fn.jobstart({ "google-java-format", "--aosp", "--replace", filepath }, {
+                on_exit = function(_, code)
+                    if code == 0 then
+                        vim.cmd("checktime")
+                        vim.notify("✓ Código formateado correctamente")
+                    else
+                        vim.notify("✗ Error al formatear", vim.log.levels.ERROR)
+                    end
+                end,
+            })
+        end,
+        rtxt = "Ctrl+Alt+L",
+    },
     { name = "separator" },
     {
         name = "  Paste",
