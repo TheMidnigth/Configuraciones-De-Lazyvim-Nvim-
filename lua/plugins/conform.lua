@@ -15,10 +15,16 @@ return {
                 json = { "prettierd" },
                 jsonc = { "prettierd" },
                 python = { "black", "isort" }, -- nuevo
+                dart = { "dart_format" },
             },
             formatters = {
                 ["google-java-format"] = {
                     args = { "--aosp", "-" },
+                },
+                dart_format = {
+                    command = vim.fn.expand("~/flutter/bin/dart"),
+                    args = { "format", "--indent", "4", "--output=show", "--summary=none", "-" },
+                    stdin = true,
                 },
                 -- nuevo
                 black = {

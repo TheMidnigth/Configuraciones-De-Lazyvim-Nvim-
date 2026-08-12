@@ -21,6 +21,7 @@ return {
                 "sql",
                 "java",
                 "python",
+                "dart",
             },
             auto_install = true,
             sync_install = false,

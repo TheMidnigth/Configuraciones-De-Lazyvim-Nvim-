@@ -11,14 +11,13 @@
 vim.api.nvim_set_hl(0, "ExBlue", { fg = "#61afef" })
 vim.api.nvim_set_hl(0, "ExRed", { fg = "#e06c75" })
 
--- 🔥 colores tipo NvChad
-vim.api.nvim_create_autocmd("ColorScheme", {
-    callback = function()
-        vim.api.nvim_set_hl(0, "NvimTreeFolderName", { fg = "#7aa2f7" })
-        vim.api.nvim_set_hl(0, "NvimTreeOpenedFolderName", { fg = "#7aa2f7", bold = true })
-        vim.api.nvim_set_hl(0, "NvimTreeEmptyFolderName", { fg = "#7aa2f7" })
-    end,
-})
+vim.api.nvim_set_hl(0, "NvimTreeFolderIcon", { fg = "#77bbf2" })
+vim.api.nvim_set_hl(0, "NvimTreeFolderArrowOpen", { fg = "#77bbf2", bold = true })
+vim.api.nvim_set_hl(0, "NvimTreeFolderArrowClosed", { fg = "#3c4145" })
+vim.api.nvim_set_hl(0, "NvimTreeFolderName", { fg = "#77bbf2" })
+vim.api.nvim_set_hl(0, "NvimTreeOpenedFolderName", { fg = "#77bbf2", bold = true })
+vim.api.nvim_set_hl(0, "NvimTreeEmptyFolderName", { fg = "#77bbf2" })
+vim.api.nvim_set_hl(0, "NvimTreeCursorLine", { bg = "#1e2832" })
 
 vim.api.nvim_create_autocmd("LspAttach", {
     callback = function(args)
@@ -75,3 +74,13 @@ vim.api.nvim_create_autocmd("FileType", {
         end, 100)
     end,
 })
+
+-- Dart y Flutter → 2 espacios
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = { "dart" },
+    callback = function()
+        vim.opt_local.shiftwidth = 2
+        vim.opt_local.tabstop = 2
+    end,
+})
+

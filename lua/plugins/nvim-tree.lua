@@ -51,6 +51,11 @@ return {
                 relativenumber = false,
                 number = false,
                 signcolumn = "no",
+                -- agrega esto:
+                float = {
+                    enable = false,
+                },
+                winhl = "WinSeparator:NvimTreeWinSeparator",
             },
             update_focused_file = {
                 enable = true,
@@ -116,6 +121,9 @@ return {
             end
 
             setup_java_highlights()
+            vim.api.nvim_set_hl(0, "NvimTreeNormal", { bg = "#12171b" })
+            vim.api.nvim_set_hl(0, "NvimTreeNormalNC", { bg = "#12171b" })
+            vim.api.nvim_set_hl(0, "NvimTreeEndOfBuffer", { bg = "#12171b" })
             vim.api.nvim_create_autocmd("ColorScheme", {
                 pattern = "*",
                 callback = setup_java_highlights,

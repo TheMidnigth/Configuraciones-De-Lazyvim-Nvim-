@@ -21,20 +21,15 @@ return {
                 "RainbowIndent4",
             }
             local rainbow_colors = {
-                { 255, 255, 64,  0.05 },
+                { 255, 255, 64, 0.05 },
                 { 127, 255, 127, 0.05 },
                 { 255, 127, 255, 0.05 },
-                { 79,  236, 236, 0.05 },
+                { 79, 236, 236, 0.05 },
             }
-
             local function hex_to_rgb(hex)
                 hex = hex:gsub("#", "")
-                return
-                    tonumber(hex:sub(1, 2), 16),
-                    tonumber(hex:sub(3, 4), 16),
-                    tonumber(hex:sub(5, 6), 16)
+                return tonumber(hex:sub(1, 2), 16), tonumber(hex:sub(3, 4), 16), tonumber(hex:sub(5, 6), 16)
             end
-
             local function mix_with_bg(r, g, b, a)
                 local bg_color = vim.api.nvim_get_hl(0, { name = "Normal" }).bg
                 local bg_hex = bg_color and string.format("%06x", bg_color) or "1e1e2e"
@@ -46,7 +41,6 @@ return {
                     math.floor(b * a + bb * (1 - a))
                 )
             end
-
             local function setup_highlights()
                 for i, c in ipairs(rainbow_colors) do
                     vim.api.nvim_set_hl(0, "RainbowIndent" .. i, {
@@ -55,9 +49,7 @@ return {
                 end
                 vim.api.nvim_set_hl(0, "IblScope", { fg = "NONE", bg = "NONE", nocombine = true })
             end
-
             hooks.register(hooks.type.HIGHLIGHT_SETUP, setup_highlights)
-
             require("ibl").setup({
                 indent = {
                     char = " ",
@@ -74,15 +66,23 @@ return {
                 },
                 exclude = {
                     filetypes = {
-                        "Trouble", "alpha", "dashboard", "help",
-                        "lazy", "mason", "neo-tree", "notify",
-                        "snacks_dashboard", "snacks_notif",
-                        "snacks_terminal", "snacks_win",
-                        "toggleterm", "trouble",
+                        "Trouble",
+                        "alpha",
+                        "dashboard",
+                        "help",
+                        "lazy",
+                        "mason",
+                        "neo-tree",
+                        "notify",
+                        "snacks_dashboard",
+                        "snacks_notif",
+                        "snacks_terminal",
+                        "snacks_win",
+                        "toggleterm",
+                        "trouble",
                     },
                 },
             })
-
             vim.api.nvim_create_autocmd("ColorScheme", {
                 callback = function()
                     setup_highlights()

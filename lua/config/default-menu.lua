@@ -2213,6 +2213,236 @@ local java_items = {
     },
 }
 
+local dart_items = {
+    {
+        name = "  Go to Definition",
+        cmd = vim.lsp.buf.definition,
+        rtxt = "F12",
+    },
+    {
+        name = "  Go to Type Definition",
+        cmd = vim.lsp.buf.type_definition,
+    },
+    {
+        name = "  Go to Implementations",
+        cmd = vim.lsp.buf.implementation,
+        rtxt = "Ctrl+F12",
+    },
+    {
+        name = "  Go to References",
+        cmd = vim.lsp.buf.references,
+        rtxt = "Shift+F12",
+    },
+    {
+        name = "  Peek",
+        items = {
+            { name = "Peek Definition", cmd = vim.lsp.buf.definition, rtxt = "Alt+F12" },
+            { name = "Peek Type Definition", cmd = vim.lsp.buf.type_definition },
+            { name = "Peek Implementations", cmd = vim.lsp.buf.implementation },
+            { name = "Peek References", cmd = vim.lsp.buf.references },
+        },
+    },
+    { name = "separator" },
+    {
+        name = "  Find All References",
+        cmd = vim.lsp.buf.references,
+        rtxt = "Shift+Alt+F12",
+    },
+    {
+        name = "  Find All Implementations",
+        cmd = vim.lsp.buf.implementation,
+    },
+    {
+        name = "  Show Call Hierarchy",
+        cmd = vim.lsp.buf.incoming_calls,
+        rtxt = "Shift+Alt+H",
+    },
+    { name = "separator" },
+    {
+        name = "  Rename Symbol",
+        cmd = vim.lsp.buf.rename,
+        rtxt = "F2",
+    },
+    {
+        name = "  Change All Occurrences",
+        cmd = vim.lsp.buf.rename,
+        rtxt = "Ctrl+F2",
+    },
+    {
+        name = "  Format Document",
+        cmd = function()
+            local ok, conform = pcall(require, "conform")
+            if ok then
+                conform.format({ lsp_fallback = true })
+            else
+                vim.lsp.buf.format()
+            end
+        end,
+        rtxt = "Shift+Alt+F",
+    },
+    {
+        name = "  Run Dart",
+        hl = "ExGreen",
+        cmd = function()
+            local cwd = vim.fn.getcwd()
+            local java_cmd = "clear; cd '"
+                .. cwd
+                .. "' && dart run; "
+                .. 'code=$?; echo; echo "Process finished with exit code $code"; read'
+            require("floaterm").open()
+            require("floaterm.api").new_term({
+                name = "Run Dart",
+                cmd = java_cmd,
+            })
+        end,
+        rtxt = "Ctrl+Shift+F10",
+    },
+    {
+        name = "  Debug Dart",
+        hl = "ExRed",
+        cmd = function()
+            require("dap").continue()
+        end,
+    },
+    {
+        name = "  Code Actions",
+        cmd = vim.lsp.buf.code_action,
+        rtxt = "Ctrl+.",
+    },
+    {
+        name = "  Refactor...",
+        cmd = vim.lsp.buf.code_action,
+        rtxt = "Ctrl+Shift+R",
+    },
+    { name = "separator" },
+    {
+        name = "  Analyze",
+        items = {
+            {
+                name = "Inspect Code",
+                cmd = vim.lsp.buf.code_action,
+            },
+            {
+                name = "Show Error Description",
+                cmd = vim.diagnostic.open_float,
+            },
+            {
+                name = "Next Problem",
+                cmd = function()
+                    vim.diagnostic.goto_next()
+                end,
+                rtxt = "F8",
+            },
+            {
+                name = "Previous Problem",
+                cmd = function()
+                    vim.diagnostic.goto_prev()
+                end,
+                rtxt = "Shift+F8",
+            },
+        },
+    },
+    {
+        name = "  Folding",
+        items = {
+            {
+                name = "Expand",
+                cmd = function()
+                    vim.cmd("normal! zo")
+                end,
+            },
+            {
+                name = "Collapse",
+                cmd = function()
+                    vim.cmd("normal! zc")
+                end,
+            },
+            {
+                name = "Expand All",
+                cmd = function()
+                    vim.cmd("normal! zR")
+                end,
+            },
+            {
+                name = "Collapse All",
+                cmd = function()
+                    vim.cmd("normal! zM")
+                end,
+            },
+        },
+    },
+    { name = "separator" },
+    {
+        name = "  Cut",
+        cmd = function()
+            vim.cmd('normal! "+d')
+        end,
+        rtxt = "Ctrl+X",
+    },
+    {
+        name = "  Copy",
+        cmd = function()
+            vim.cmd('normal! "+y')
+        end,
+        rtxt = "Ctrl+C",
+    },
+    {
+        name = "  Copy As",
+        items = {
+            {
+                name = "Copy Relative Path",
+                cmd = function()
+                    local rel = vim.fn.fnamemodify(get_bufname(), ":~:.")
+                    vim.fn.setreg("+", rel)
+                    vim.notify("Copied: " .. rel)
+                end,
+            },
+            {
+                name = "Copy Absolute Path",
+                cmd = function()
+                    vim.fn.setreg("+", get_bufname())
+                    vim.notify("Copied: " .. get_bufname())
+                end,
+            },
+        },
+    },
+    {
+        name = "  Paste",
+        cmd = function()
+            vim.cmd('normal! "+p')
+        end,
+        rtxt = "Ctrl+V",
+    },
+    { name = "separator" },
+    {
+        name = "  Open In",
+        items = {
+            {
+                name = "Terminal",
+                cmd = function()
+                    local dir = vim.fn.fnamemodify(get_bufname(), ":h")
+                    vim.cmd("enew")
+                    vim.fn.termopen({ vim.o.shell, "-c", "cd " .. dir .. " ; " .. vim.o.shell })
+                end,
+            },
+        },
+    },
+    {
+        name = "  Compare with Clipboard",
+        cmd = function()
+            local clipboard = vim.fn.getreg("+")
+            local tmp = vim.fn.tempname()
+            local f = io.open(tmp, "w")
+            if f then
+                f:write(clipboard)
+                f:close()
+            end
+            vim.cmd("diffsplit " .. tmp)
+        end,
+        rtxt = "Ctrl+K, C",
+    },
+}
+
 local ok, ft = pcall(get_ft)
 if ok and ft == "html" then
     return html_items
@@ -2222,6 +2452,8 @@ elseif ok and (ft == "javascript" or ft == "javascriptreact" or ft == "typescrip
     return javascript_items
 elseif ok and ft == "java" then
     return java_items
+elseif ok and ft == "dart" then
+    return dart_items
 else
     return default_items
 end

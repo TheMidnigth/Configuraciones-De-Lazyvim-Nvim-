@@ -158,9 +158,13 @@ return {
                 vim.api.nvim_set_hl(0, "BlinkCmpKindEvent", { fg = "#e5c07b" }) -- amarillo
                 vim.api.nvim_set_hl(0, "BlinkCmpKindOperator", { fg = "#98c379" }) -- verde
                 vim.api.nvim_set_hl(0, "BlinkCmpKindTypeParameter", { fg = "#e5c07b" }) -- amarillo
+
+                local accent = vim.api.nvim_get_hl(0, { name = "Function" }).fg
+                local accent_hex = accent and string.format("#%06x", accent) or "#61afef"
+                vim.api.nvim_set_hl(0, "BlinkCmpMenuSelection", { bg = accent_hex, fg = "#ffffff", bold = true })
+
                 vim.api.nvim_set_hl(0, "FloatBorder", { fg = "#3d3f41", bg = "NONE" })
                 vim.api.nvim_set_hl(0, "NormalFloat", { bg = "NONE" })
-                vim.api.nvim_set_hl(0, "BlinkCmpMenu", { bg = "NONE" })
                 vim.api.nvim_set_hl(0, "BlinkCmpDoc", { bg = "NONE" })
             end
 
