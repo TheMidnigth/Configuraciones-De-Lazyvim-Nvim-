@@ -2052,7 +2052,6 @@ local java_items = {
             local current_file = vim.fn.expand("%:t:r")
             local project_name = vim.fn.fnamemodify(cwd, ":t")
             local out_dir = "out/production/" .. project_name
-
             -- Detecta si la clase tiene package
             local lines = vim.api.nvim_buf_get_lines(0, 0, 10, false)
             local package_name = nil
@@ -2063,10 +2062,8 @@ local java_items = {
                     break
                 end
             end
-
             -- Si tiene package lo incluye, si no lo omite
             local class_path = package_name and (package_name .. "." .. current_file) or current_file
-
             local java_cmd = "clear; cd '"
                 .. cwd
                 .. "' && javac -d "
@@ -2077,11 +2074,20 @@ local java_items = {
                 .. class_path
                 .. "; "
                 .. 'code=$?; echo; echo "Process finished with exit code $code"; read'
-            require("floaterm").open()
-            require("floaterm.api").new_term({
-                name = "Run " .. current_file,
+            local Terminal = require("toggleterm.terminal").Terminal
+            local run_term = Terminal:new({
                 cmd = java_cmd,
+                hidden = true,
+                direction = "float",
+                close_on_exit = false,
+                display_name = "Run " .. current_file,
+                float_opts = {
+                    border = "curved",
+                    width = math.floor(vim.o.columns * 0.85),
+                    height = math.floor(vim.o.lines * 0.80),
+                },
             })
+            run_term:toggle()
         end,
         rtxt = "Ctrl+Shift+F10",
     },
@@ -2285,15 +2291,24 @@ local dart_items = {
         hl = "ExGreen",
         cmd = function()
             local cwd = vim.fn.getcwd()
-            local java_cmd = "clear; cd '"
+            local dart_cmd = "clear; cd '"
                 .. cwd
                 .. "' && dart run; "
                 .. 'code=$?; echo; echo "Process finished with exit code $code"; read'
-            require("floaterm").open()
-            require("floaterm.api").new_term({
-                name = "Run Dart",
-                cmd = java_cmd,
+            local Terminal = require("toggleterm.terminal").Terminal
+            local run_term = Terminal:new({
+                cmd = dart_cmd,
+                hidden = true,
+                direction = "float",
+                close_on_exit = false,
+                display_name = "Run Dart",
+                float_opts = {
+                    border = "curved",
+                    width = math.floor(vim.o.columns * 0.85),
+                    height = math.floor(vim.o.lines * 0.80),
+                },
             })
+            run_term:toggle()
         end,
         rtxt = "Ctrl+Shift+F10",
     },
@@ -2443,6 +2458,271 @@ local dart_items = {
     },
 }
 
+local python_items = {
+    {
+        name = "  Go to Definition",
+        cmd = vim.lsp.buf.definition,
+        rtxt = "F12",
+    },
+    {
+        name = "  Go to Declaration",
+        cmd = vim.lsp.buf.declaration,
+    },
+    {
+        name = "  Go to Type Definition",
+        cmd = vim.lsp.buf.type_definition,
+    },
+    {
+        name = "  Go to Implementations",
+        cmd = vim.lsp.buf.implementation,
+        rtxt = "Ctrl+F12",
+    },
+    {
+        name = "  Go to References",
+        cmd = vim.lsp.buf.references,
+        rtxt = "Shift+F12",
+    },
+    {
+        name = "  Peek",
+        items = {
+            { name = "Peek Definition", cmd = vim.lsp.buf.definition, rtxt = "Alt+F12" },
+            { name = "Peek Type Definition", cmd = vim.lsp.buf.type_definition },
+            { name = "Peek Implementations", cmd = vim.lsp.buf.implementation },
+            { name = "Peek References", cmd = vim.lsp.buf.references },
+        },
+    },
+    { name = "separator" },
+    {
+        name = "  Find All References",
+        cmd = vim.lsp.buf.references,
+        rtxt = "Shift+Alt+F12",
+    },
+    {
+        name = "  Find All Implementations",
+        cmd = vim.lsp.buf.implementation,
+    },
+    {
+        name = "  Show Call Hierarchy",
+        cmd = vim.lsp.buf.incoming_calls,
+        rtxt = "Shift+Alt+H",
+    },
+    {
+        name = "  Show Type Hierarchy",
+        cmd = vim.lsp.buf.type_definition,
+    },
+    { name = "separator" },
+    {
+        name = "  Rename Symbol",
+        cmd = vim.lsp.buf.rename,
+        rtxt = "F2",
+    },
+    {
+        name = "  Change All Occurrences",
+        cmd = vim.lsp.buf.rename,
+        rtxt = "Ctrl+F2",
+    },
+    {
+        name = "  Format Document",
+        cmd = function()
+            local ok, conform = pcall(require, "conform")
+            if ok then
+                conform.format({ lsp_fallback = true })
+            else
+                vim.lsp.buf.format()
+            end
+        end,
+        rtxt = "Shift+Alt+F",
+    },
+    {
+        name = "  Refactor...",
+        cmd = vim.lsp.buf.code_action,
+        rtxt = "Ctrl+Shift+R",
+    },
+    {
+        name = "  Source Action...",
+        cmd = vim.lsp.buf.code_action,
+    },
+    { name = "separator" },
+    {
+        name = "  Analyze",
+        items = {
+            {
+                name = "Inspect Code",
+                cmd = vim.lsp.buf.code_action,
+            },
+            {
+                name = "Show Error Description",
+                cmd = vim.diagnostic.open_float,
+            },
+            {
+                name = "Next Problem",
+                cmd = function()
+                    vim.diagnostic.goto_next()
+                end,
+                rtxt = "F8",
+            },
+            {
+                name = "Previous Problem",
+                cmd = function()
+                    vim.diagnostic.goto_prev()
+                end,
+                rtxt = "Shift+F8",
+            },
+        },
+    },
+    {
+        name = "  Folding",
+        items = {
+            {
+                name = "Expand",
+                cmd = function()
+                    vim.cmd("normal! zo")
+                end,
+            },
+            {
+                name = "Collapse",
+                cmd = function()
+                    vim.cmd("normal! zc")
+                end,
+            },
+            {
+                name = "Expand All",
+                cmd = function()
+                    vim.cmd("normal! zR")
+                end,
+            },
+            {
+                name = "Collapse All",
+                cmd = function()
+                    vim.cmd("normal! zM")
+                end,
+            },
+        },
+    },
+    { name = "separator" },
+    {
+        name = "  Cut",
+        cmd = function()
+            vim.cmd('normal! "+d')
+        end,
+        rtxt = "Ctrl+X",
+    },
+    {
+        name = "  Copy",
+        cmd = function()
+            vim.cmd('normal! "+y')
+        end,
+        rtxt = "Ctrl+C",
+    },
+    {
+        name = "  Copy As",
+        items = {
+            {
+                name = "Copy Relative Path",
+                cmd = function()
+                    local rel = vim.fn.fnamemodify(get_bufname(), ":~:.")
+                    vim.fn.setreg("+", rel)
+                    vim.notify("Copied: " .. rel)
+                end,
+            },
+            {
+                name = "Copy Absolute Path",
+                cmd = function()
+                    vim.fn.setreg("+", get_bufname())
+                    vim.notify("Copied: " .. get_bufname())
+                end,
+            },
+        },
+    },
+    {
+        name = "  Paste",
+        cmd = function()
+            vim.cmd('normal! "+p')
+        end,
+        rtxt = "Ctrl+V",
+    },
+    { name = "separator" },
+    {
+        name = "  Run Python",
+        hl = "ExGreen",
+        items = {
+            {
+                name = "Run Python File in Terminal",
+                cmd = function()
+                    local cwd = vim.fn.getcwd()
+                    local filepath = vim.fn.expand("%:p")
+                    local python_cmd = "clear; cd '"
+                        .. cwd
+                        .. "' && python3 '"
+                        .. filepath
+                        .. "'; "
+                        .. 'code=$?; echo; echo "Process finished with exit code $code"; read'
+                    local Terminal = require("toggleterm.terminal").Terminal
+                    local run_term = Terminal:new({
+                        cmd = python_cmd,
+                        hidden = true,
+                        direction = "float",
+                        close_on_exit = false,
+                        display_name = "Run Python",
+                        float_opts = {
+                            border = "curved",
+                            width = math.floor(vim.o.columns * 0.85),
+                            height = math.floor(vim.o.lines * 0.80),
+                        },
+                    })
+                    run_term:toggle()
+                end,
+                rtxt = "Ctrl+Shift+F10",
+            },
+            {
+                name = "Run Selection/Line in Terminal",
+                cmd = function()
+                    local mode = vim.fn.mode()
+                    local text
+                    if mode == "v" or mode == "V" then
+                        local start = vim.fn.getpos("'<")
+                        local finish = vim.fn.getpos("'>")
+                        local lines = vim.api.nvim_buf_get_lines(0, start[2] - 1, finish[2], false)
+                        text = table.concat(lines, "\n")
+                    else
+                        text = vim.api.nvim_get_current_line()
+                    end
+                    local Terminal = require("toggleterm.terminal").Terminal
+                    local run_term = Terminal:new({
+                        cmd = "clear; python3 -c '" .. text:gsub("'", "'\\''") .. "'; read",
+                        hidden = true,
+                        direction = "float",
+                        close_on_exit = false,
+                        display_name = "Run Selection",
+                        float_opts = {
+                            border = "curved",
+                            width = math.floor(vim.o.columns * 0.85),
+                            height = math.floor(vim.o.lines * 0.80),
+                        },
+                    })
+                    run_term:toggle()
+                end,
+                rtxt = "Shift+Enter",
+            },
+        },
+    },
+    { name = "separator" },
+    {
+        name = "  Compare with Clipboard",
+        cmd = function()
+            local clipboard = vim.fn.getreg("+")
+            local tmp = vim.fn.tempname()
+            local f = io.open(tmp, "w")
+            if f then
+                f:write(clipboard)
+                f:close()
+            end
+            vim.cmd("diffsplit " .. tmp)
+        end,
+        rtxt = "Ctrl+K, C",
+    },
+}
+
 local ok, ft = pcall(get_ft)
 if ok and ft == "html" then
     return html_items
@@ -2454,6 +2734,8 @@ elseif ok and ft == "java" then
     return java_items
 elseif ok and ft == "dart" then
     return dart_items
+elseif ok and ft == "python" then
+    return python_items
 else
     return default_items
 end
