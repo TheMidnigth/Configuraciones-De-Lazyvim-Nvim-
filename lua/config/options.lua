@@ -35,6 +35,7 @@ vim.opt.termguicolors = true
 vim.opt.signcolumn = "yes"
 vim.opt.wrap = false
 vim.opt.colorcolumn = ""
+vim.g.have_nerd_font = true
 -- ===============================
 -- SCROLL / FLUIDEZ
 -- ===============================
@@ -80,15 +81,12 @@ vim.api.nvim_create_autocmd("FileType", {
             local col = vim.api.nvim_win_get_cursor(0)[2]
             local before = line:sub(1, col)
             local after = line:sub(col + 1)
-            -- caso 1: <h1>hola| </h1>
             if before:match("<[%a][^>]*>.+") and after:match("^</[%a]") then
                 return "<CR><ESC>O"
             end
-            -- caso 2: <h1>|hola</h1>
             if before:match("<[%a][^>]*>$") and after:match(".+</[%a]") then
                 return "<CR>"
             end
-            -- caso original: <tag>|</tag> sin contenido
             if before:match("<[%a][^>]*>$") and after:match("^</[%a]") then
                 return "<CR><ESC>O"
             end

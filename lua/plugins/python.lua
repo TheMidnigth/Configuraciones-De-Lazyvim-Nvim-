@@ -112,26 +112,6 @@ return {
         },
     },
 
-    -- ── Tipos inline en el código (como PyCharm) ─────────────────────
-    {
-        "lvimuser/lsp-inlayhints.nvim",
-        event = "LspAttach",
-        config = function()
-            require("lsp-inlayhints").setup({
-                inlay_hints = {
-                    parameter_hints = { show = true, prefix = "← " },
-                    type_hints = { show = true, prefix = "» " },
-                },
-            })
-            vim.api.nvim_create_autocmd("LspAttach", {
-                callback = function(args)
-                    local client = vim.lsp.get_client_by_id(args.data.client_id)
-                    require("lsp-inlayhints").on_attach(client, args.buf)
-                end,
-            })
-        end,
-    },
-
     -- ── Resalta todas las referencias de la variable bajo el cursor ───
     {
         "RRethy/vim-illuminate",

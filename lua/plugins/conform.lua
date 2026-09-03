@@ -21,11 +21,7 @@ return {
                 ["google-java-format"] = {
                     args = { "--aosp", "-" },
                 },
-                dart_format = {
-                    command = vim.fn.expand("~/flutter/bin/dart"),
-                    args = { "format", "--indent", "4", "--output=show", "--summary=none", "-" },
-                    stdin = true,
-                },
+                dart = { "dart_format" },
                 -- nuevo
                 black = {
                     args = { "--line-length", "88", "--quiet", "-" },

@@ -1,3 +1,8 @@
+if vim.b.did_ftplugin_java_custom then
+    return
+end
+vim.b.did_ftplugin_java_custom = true
+
 -- ============================================
 -- CONFIGURACIÓN DE SIGNOS DAP (DEBE ESTAR PRIMERO)
 -- ============================================

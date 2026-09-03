@@ -15,8 +15,7 @@ return {
                         package.loaded["config.default-menu"] = nil
                         options = require("config.default-menu")
                     end
-
-                    if ft == "java" then
+                    if ft == "java" or ft == "dart" then
                         local buf = vim.api.nvim_get_current_buf()
                         local filtered = {}
                         for _, item in ipairs(options) do
@@ -26,7 +25,6 @@ return {
                         end
                         options = filtered
                     end
-
                     require("menu").open(options)
                 end,
                 desc = "Open Menu",
@@ -46,8 +44,7 @@ return {
                         package.loaded["config.default-menu"] = nil
                         options = require("config.default-menu")
                     end
-
-                    if ft == "java" then
+                    if ft == "java" or ft == "dart" then
                         local filtered = {}
                         for _, item in ipairs(options) do
                             if item.condition == nil or item.condition(buf) then
@@ -56,7 +53,6 @@ return {
                         end
                         options = filtered
                     end
-
                     require("menu").open(options, { mouse = true })
                 end,
                 desc = "Open Context Menu",

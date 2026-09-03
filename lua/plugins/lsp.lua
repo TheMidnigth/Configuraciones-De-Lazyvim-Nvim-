@@ -23,7 +23,6 @@ return {
         opts = {
             inlay_hints = { enabled = true },
             servers = {
-                -- ── lo que ya tenías ──────────────────────────────────
                 html = {
                     init_options = {
                         provideFormatter = true,
@@ -132,14 +131,15 @@ return {
 
                 -- ── nuevo: Python ─────────────────────────────────────
                 pyright = {
+                    single_file_support = true, -- 👈 para que arranque aunque el archivo no esté en un "proyecto" (sin .git, pyproject.toml, etc.)
                     settings = {
                         python = {
                             analysis = {
-                                typeCheckingMode = "strict",        -- chequeo de tipos estricto
+                                typeCheckingMode = "basic", -- antes: "strict" (mucho más pesado, causaba el delay)
                                 autoSearchPaths = true,
                                 useLibraryCodeForTypes = true,
-                                autoImportCompletions = true,        -- auto-import como PyCharm
-                                diagnosticMode = "workspace",        -- analiza todo el proyecto
+                                autoImportCompletions = true, -- auto-import como PyCharm
+                                diagnosticMode = "openFilesOnly", -- antes: "workspace" (reanalizaba TODO el proyecto en cada tecla)
                                 inlayHints = {
                                     variableTypes = true,
                                     functionReturnTypes = true,

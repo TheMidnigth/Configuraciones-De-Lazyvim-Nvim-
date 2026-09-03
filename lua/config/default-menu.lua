@@ -42,6 +42,33 @@ local function has_main_method(buf)
     return false
 end
 
+local function has_dart_main(buf)
+    local ok, parser = pcall(vim.treesitter.get_parser, buf, "dart")
+    if not ok then
+        return false
+    end
+    local tree = parser:parse()[1]
+    if not tree then
+        return false
+    end
+    local query = vim.treesitter.query.parse(
+        "dart",
+        [[
+        (function_signature
+            name: (identifier) @name)
+        ]]
+    )
+    for _, match in query:iter_matches(tree:root(), buf, nil, nil, { all = true }) do
+        local name_node = match[1] and match[1][1]
+        if name_node then
+            if vim.treesitter.get_node_text(name_node, buf) == "main" then
+                return true
+            end
+        end
+    end
+    return false
+end
+
 local function filter_items(items, buf)
     local result = {}
     for _, item in ipairs(items) do
@@ -2286,9 +2313,11 @@ local dart_items = {
         end,
         rtxt = "Shift+Alt+F",
     },
+    { name = "separator", condition = has_dart_main },
     {
         name = "  Run Dart",
         hl = "ExGreen",
+        condition = has_dart_main,
         cmd = function()
             local cwd = vim.fn.getcwd()
             local dart_cmd = "clear; cd '"
@@ -2315,6 +2344,7 @@ local dart_items = {
     {
         name = "  Debug Dart",
         hl = "ExRed",
+        condition = has_dart_main,
         cmd = function()
             require("dap").continue()
         end,
